@@ -79,7 +79,7 @@ ${S.meetups.length?S.meetups.map(card).join(''):'<p class="empty">아직 열린 
 
 qna:()=>`<h2>자주 묻는 질문</h2>${admin?`<p><button class="btn" data-a="newQ">+ 질문 추가</button></p>`:''}${formQ?qForm():''}
 ${S.qna.map(q=>`<details class="q" data-id="${q.id}" ${openQ.has(q.id)?'open':''}><summary>${esc(q.q)}</summary><div class="a">${esc(q.a)}</div>${admin?`<div class="ctl"><button class="btn ghost sm" data-a="editQ" data-id="${q.id}">수정</button>${del('q'+q.id,'delQ',q.id)}</div>`:''}</details>`).join('')||'<p class="empty">등록된 질문이 없어요.</p>'}
-<h2>더 궁금한 점이 있나요?</h2><form class="f box" data-f="ask"><label class="w">궁금한 점<textarea name="text" rows="3" required placeholder="자유롭게 적어주세요"></textarea></label>
+<h2>더 궁금한 점이 있나요?</h2><form class="f box" data-f="ask"><label class="w">궁금한 점, 건의하고 싶은 점<textarea name="text" rows="3" required placeholder="자유롭게 적어주세요"></textarea></label>
 <label>이름 또는 연락처 (선택)<input name="who" placeholder="답변을 받고 싶을 때만 적어주세요"></label><div style="align-self:end"><button class="btn">질문 보내기</button></div></form>
 ${admin?`<h2>접수된 질문 (${S.inbox.length})</h2>${S.inbox.map(x=>`<div class="box" style="margin-bottom:10px"><p style="white-space:pre-wrap;color:var(--ink)">${esc(x.text)}</p><p style="font-size:13px;margin-top:6px">${esc(x.who||'익명')} · ${esc(x.t)}</p><div class="ctl" style="padding:8px 0 0"><button class="btn ghost sm" data-a="toQ" data-id="${x.id}">QnA로 만들기</button>${del('i'+x.id,'delI',x.id)}</div></div>`).join('')||'<p class="empty">아직 접수된 질문이 없어요.</p>'}`:''}`};
 
@@ -108,7 +108,7 @@ ${admin?`<p><button class="btn ghost sm" data-a="editM" data-id="${m.id}">수정
 <h3>신청하기</h3><form class="f" data-f="apply" data-id="${m.id}">
 <label>이름<input name="name" required></label><label>또래<select name="c" required><option value="">선택</option>${COH.map(c=>`<option>${c}</option>`).join('')}</select></label>
 <label>연락처<input name="tel" type="tel" placeholder="010-0000-0000" required></label><label>은행 · 계좌번호 (환불용)<input name="bank" placeholder="예) 국민 123-456-7890" required></label>
-<div class="w"><button class="btn">${full?'대기 명단에 신청':'신청하기'}</button> <small style="color:var(--mut)">연락처로 입금 안내를 보내드려요. 입금 확인 후 확정돼요.</small></div></form>
+<div class="w"><button class="btn">${full?'대기 명단에 신청':'신청하기'}</button> </div></form>
 <div class="lists"><div><h3>대기 인원 (${w.length})</h3><ol>${w.map(p=>li(m,p)).join('')||'<li class="empty">아직 없어요</li>'}</ol></div>
 <div><h3>확정 인원 (${ok.length}/${m.max})</h3><ol>${ok.map(p=>li(m,p)).join('')||'<li class="empty">아직 없어요</li>'}</ol></div></div></div>`:''}</article>`}
 
