@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in ['seo558686@gmail.com'];   // ← 관리자 이메일로 교체
+    }
+
+    // 모임 글, QnA: 누구나 읽기 / 관리자만 쓰기
+    match /meetups/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /qna/{id}     { allow read: if true; allow write: if isAdmin(); }
+
+    // 신청 명단(이름, 또래, 상태): 누구나 읽기 / 누구나 '대기'로만 등록 / 변경·삭제는 관리자
+    match /entries/{id} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['mid','name','c','s','n'])
+        && request.resource.data.s == 'wait'
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 20
+        && request.resource.data.c is string && request.resource.data.c.size() == 2
+        && request.resource.data.mid is string
+        && exists(/databases/$(db)/documents/meetups/$(request.resource.data.mid));
+      allow update, delete: if isAdmin();
+    }
+
+    // 연락처·계좌: 누구나 등록만 가능 / 읽기·수정·삭제는 관리자만
+    match /entryPrivate/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['mid','tel','bank'])
+        && request.resource.data.tel is string && request.resource.data.tel.size() <= 30
+        && request.resource.data.bank is string && request.resource.data.bank.size() <= 60;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 추가 질문: 누구나 보내기 / 읽기·삭제는 관리자만
+    match /inbox/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['text','who','t'])
+        && request.resource.data.text is string && request.resource.data.text.size() <= 1000
+        && request.resource.data.who is string && request.resource.data.who.size() <= 60;
+      allow read, delete: if isAdmin();
+    }
+  }
+}
